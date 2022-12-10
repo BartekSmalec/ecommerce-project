@@ -17,21 +17,42 @@ export class CartService {
   //totalPrice: Subject<number> = new Subject<number>(); // Subject is a subclass of observable, we can use subject to publish events in our code, this event will be sen to subscribers
   totalPrice: Subject<number> = new BehaviorSubject<number>(0);
   totalQuantity: Subject<number> = new BehaviorSubject<number>(0);
-  constructor() { }
 
-  decrementQuantity(theCartItem: CartItem)
-  {
+  //storage: Storage = sessionStorage;
+  storage: Storage = localStorage;
+
+
+  constructor() {
+    let jsonData = this.storage.getItem('cartItems');
+
+    if (jsonData != null) {
+      let data = JSON.parse(jsonData);
+      if (data != null) {
+        this.cartItems = data;
+
+        console.log(`Data: ${data}`);
+        console.log(`this.cartItems: ` + JSON.stringify(this.cartItems));
+
+        // compute totals based on the data that is read from storage
+
+        this.computeCartTotals();
+      }
+    }
+
+
+  }
+
+  decrementQuantity(theCartItem: CartItem) {
     theCartItem.quantity--;
-    if(theCartItem.quantity === 0){
+    if (theCartItem.quantity === 0) {
       this.remove(theCartItem);
-    }else{
+    } else {
       this.computeCartTotals();
     }
   }
   remove(theCartItem: CartItem) {
-    const itemIndex =  this.cartItems.findIndex( tempCartItem => tempCartItem.id === theCartItem.id);
-    if(itemIndex > -1)
-    {
+    const itemIndex = this.cartItems.findIndex(tempCartItem => tempCartItem.id === theCartItem.id);
+    if (itemIndex > -1) {
       this.cartItems.splice(itemIndex, 1);
       this.computeCartTotals();
     }
@@ -79,8 +100,14 @@ export class CartService {
     // log
 
     this.logCartData(totalPriceValue, totalQuantityValue);
+
+    this.persistCartItems();
   }
-  
+
+  persistCartItems() {
+    this.storage.setItem('cartItems', JSON.stringify(this.cartItems));
+  }
+
   logCartData(totalPriceValue: number, totalQuantityValue: number) {
     console.log("Contents of the cart");
     for (let tempCartItem of this.cartItems) {
