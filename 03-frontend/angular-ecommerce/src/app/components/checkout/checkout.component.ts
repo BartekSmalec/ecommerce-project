@@ -32,6 +32,9 @@ export class CheckoutComponent implements OnInit {
   shippingAdressStates: State[] = [];
   billingAdressStates: State[] = [];
 
+  storage: Storage = sessionStorage;
+  theEmail: string = '';
+
   constructor(private formBuilder: FormBuilder, private shopFormService: ShopFormService, private cartService: CartService, private checkoutService: CheckoutService, private router: Router) {
 
   }
@@ -40,11 +43,13 @@ export class CheckoutComponent implements OnInit {
 
     this.reviewCartDetails();
 
+    this.theEmail = this.storage.getItem('userEmail')!;
+
     this.checkoutFormGroup = this.formBuilder.group({
       customer: this.formBuilder.group({
         firstName: new FormControl('', [Validators.required, Validators.minLength(2), ShopValidators.notOnlyWhiteSpace]),
         lastName: new FormControl('', [Validators.required, Validators.minLength(2), ShopValidators.notOnlyWhiteSpace]),
-        email: new FormControl('',
+        email: new FormControl(this.theEmail,
           [Validators.required, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')])
       }),
       shippingAddress: this.formBuilder.group(
@@ -189,7 +194,7 @@ export class CheckoutComponent implements OnInit {
     // call REST API via the checkoutService
 
     this.checkoutService.placeOrder(purchase).subscribe({
-      next: response =>{
+      next: response => {
         alert(`Your order has been received.\n Order tracking number: ${response.orderTrackingNumber}`);
         // reset cart
         this.resetCart();
