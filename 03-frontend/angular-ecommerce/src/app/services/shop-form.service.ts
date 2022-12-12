@@ -1,18 +1,19 @@
-import { Injectable, Pipe } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Country } from '../common/country';
 import { map } from 'rxjs';
 import { State } from '../common/state';
+import { environment } from 'src/environment/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShopFormService {
 
-  private countriesUrl: string = "http://localhost:8080/api/countries";
-  private stateUrl: string = "http://localhost:8080/api/states";
+  private countriesUrl: string = environment.apiUrl + "/countries";
+  private stateUrl: string = environment.apiUrl + "/states";
 
   constructor(private httpClient: HttpClient) { }
 
