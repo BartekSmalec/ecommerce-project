@@ -1,10 +1,8 @@
 package com.bartek.ecommerce.config;
 
-import com.bartek.ecommerce.entity.Country;
-import com.bartek.ecommerce.entity.Product;
-import com.bartek.ecommerce.entity.ProductCategory;
-import com.bartek.ecommerce.entity.State;
+import com.bartek.ecommerce.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
@@ -20,6 +18,9 @@ import java.util.Set;
 @Configuration
 public class MyDataRestConfig implements RepositoryRestConfigurer {
 
+    @Value("${allowed.origins}")
+    private String[] theAllowedOrigins;
+
     private EntityManager entityManager;
 
     @Autowired
@@ -31,16 +32,19 @@ public class MyDataRestConfig implements RepositoryRestConfigurer {
     public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry cors) {
         RepositoryRestConfigurer.super.configureRepositoryRestConfiguration(config, cors);
 
-        HttpMethod[] theUnupportedAction = { HttpMethod.PUT, HttpMethod.POST,HttpMethod.DELETE};
+        HttpMethod[] theUnupportedAction = { HttpMethod.PUT, HttpMethod.POST,HttpMethod.DELETE, HttpMethod.PATCH};
 
         // disable HTTP method for Product: PUT, POST, DELETE
         disableHttpMethods(Product.class, config, theUnupportedAction);
         disableHttpMethods(ProductCategory.class,config, theUnupportedAction);
         disableHttpMethods(Country.class,config, theUnupportedAction);
         disableHttpMethods(State.class,config, theUnupportedAction);
+        disableHttpMethods(Order.class,config, theUnupportedAction);
 
         exposeIds(config);
 
+        // configure cors mapping
+        cors.addMapping(config.getBasePath() + "/**").allowedOrigins(theAllowedOrigins);
     }
 
     private void disableHttpMethods(Class theClass,RepositoryRestConfiguration config, HttpMethod[] theUnupportedAction) {
