@@ -28,6 +28,10 @@ public class SecurityConfiguration {
 
         Okta.configureResourceServer401ResponseBody(httpSecurity);
 
+        // disable CSRF since cokkies are not used for session tracking
+
+        httpSecurity.csrf().disable();
+
         return httpSecurity.build();
     }
 }
