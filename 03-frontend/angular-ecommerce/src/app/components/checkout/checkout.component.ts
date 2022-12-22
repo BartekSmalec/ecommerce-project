@@ -235,8 +235,10 @@ export class CheckoutComponent implements OnInit {
 
     // compute payment info
 
-    this.paymentInfo.amount = this.totalPrice * 100;
+    this.paymentInfo.amount = Math.round(this.totalPrice * 100);
     this.paymentInfo.currency = "USD";
+
+    console.log(`Payment info amount: ${this.paymentInfo.amount}`);
 
     // call REST API via the checkoutService
 
