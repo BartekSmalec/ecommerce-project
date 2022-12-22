@@ -20,6 +20,8 @@ import { PaymentInfo } from 'src/app/common/payment-info';
 })
 export class CheckoutComponent implements OnInit {
 
+  isDisabled: boolean = false;
+
   checkoutFormGroup!: FormGroup;
 
   totalPrice: number = 0;
@@ -259,6 +261,8 @@ export class CheckoutComponent implements OnInit {
     // place order
 
     if (!this.checkoutFormGroup.invalid && this.displayError.textContent == "") {
+  
+      this.isDisabled = true;
       this.checkoutService.createPaymentIntent(this.paymentInfo).subscribe(
         (paymentIntentResponse) => {
           this.stripe.confirmCardPayment(paymentIntentResponse.client_secret, {
@@ -281,15 +285,18 @@ export class CheckoutComponent implements OnInit {
             if (result.error) {
               // inform the customer there was an error
               alert(`There was an error: ${result.error.message}`);
+              this.isDisabled = false
             } else {
               // call rest api via checkoutService
               this.checkoutService.placeOrder(purchase).subscribe({
                 next: (response: any) => {
                   alert(`Your tracking number: ${response.orderTrackingNumber}`);
                   this.resetCart();
+                  this.isDisabled =  false;
                 },
                 error: (err: any) => {
                   alert(`There was an error: ${err.message}`);
+                  this.isDisabled = false;
                 }
               })
             }
