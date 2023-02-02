@@ -8,5 +8,5 @@ import com.stripe.model.PaymentIntent;
 
 public interface CheckoutService {
     PurchaseResponse placeOrder(Purchase purchase);
-    PaymentIntent createPaymentInfo(PaymentInfo paymentInfo) throws StripeException;
+    PaymentIntent createPaymentIntent(PaymentInfo paymentInfo) throws StripeException;
 }

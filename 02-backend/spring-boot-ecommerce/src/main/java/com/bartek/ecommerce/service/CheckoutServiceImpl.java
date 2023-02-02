@@ -71,7 +71,7 @@ public class CheckoutServiceImpl implements CheckoutService{
     }
 
     @Override
-    public PaymentIntent createPaymentInfo(PaymentInfo paymentInfo) throws StripeException {
+    public PaymentIntent createPaymentIntent(PaymentInfo paymentInfo) throws StripeException {
         List<String> paymentMethodTypes = new ArrayList<>();
         paymentMethodTypes.add("card");
 
@@ -79,6 +79,8 @@ public class CheckoutServiceImpl implements CheckoutService{
         params.put("amount", paymentInfo.getAmount());
         params.put("currency", paymentInfo.getCurrency());
         params.put("payment_method_types", paymentMethodTypes);
+        params.put("description", "spring-boot-ecommerce purchase");
+        params.put("receipt_email", paymentInfo.getReceiptEmail());
         return PaymentIntent.create(params);
     }
 
